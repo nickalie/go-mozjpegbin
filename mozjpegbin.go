@@ -13,10 +13,8 @@ import (
 var skipDownload bool
 var dest string = "vendor/mozjpeg"
 
-//Detects platforms without prebuilt binaries (alpine, arm, macOs).
-//For this platforms mozjpeg tools should be built manually.
-func DetectUnsupportedPlatforms() {
-	if runtime.GOARCH == "arm" || runtime.GOOS == "darwin" || runtime.GOOS == "linux" {
+func init()  {
+	if runtime.GOARCH == "arm" || runtime.GOOS != "windows" {
 		SkipDownload()
 	}
 }
