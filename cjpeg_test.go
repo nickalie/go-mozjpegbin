@@ -13,7 +13,6 @@ import (
 )
 
 func init() {
-	DetectUnsupportedPlatforms()
 	downloadFile("https://upload.wikimedia.org/wikipedia/commons/e/e3/Avola-Syracuse-Sicilia-Italy_-_Creative_Commons_by_gnuckx_%283858115914%29.jpg", "source.jpg")
 }
 
