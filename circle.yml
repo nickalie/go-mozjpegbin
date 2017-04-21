@@ -12,8 +12,8 @@ dependencies:
           ./configure:
           sudo make install
         fi
-        sudo ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/jpegtran
-        sudo ln -s /opt/mozjpeg/bin/cjpeg /usr/local/bin/cjpeg
+      - sudo ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/jpegtran
+      - sudo ln -s /opt/mozjpeg/bin/cjpeg /usr/local/bin/cjpeg
     cache_directories:
       - "/opt/mozjpeg"
 test:
