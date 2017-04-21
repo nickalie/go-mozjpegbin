@@ -161,6 +161,7 @@ func (c *JpegTran) Reset() *JpegTran {
 	c.optimize = true
 	c.progressive = false
 	c.copy = "none"
+	c.crop = nil
 	return c
 }
 
