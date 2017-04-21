@@ -1,7 +1,20 @@
 machine:
   services:
     - docker
+dependencies:
+    pre:
+      - sudo apt-get update && apt-get install -y --no-install-recommends g++ make autoconf automake libtool nasm wget
+      - wget https://github.com/mozilla/mozjpeg/releases/download/v3.2-pre/mozjpeg-3.2-release-source.tar.gz
+      - tar -xvzf mozjpeg-3.2-release-source.tar.gz
+      - ./configure:
+          pwd:
+            mozjpeg
+      - sudo make install:
+          pwd:
+            mozjpeg
+      - sudo ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/jpegtran && \
+      - sudo ln -s /opt/mozjpeg/bin/cjpeg /usr/local/bin/cjpeg
 test:
   override:
-    - go test -v -race ./...
-    - docker build -f docker/Dockerfile --rm=false -t test-alpine-image .
+    - go test -v ./...
+    - docker build -f docker/Dockerfile.alpine --rm=false -t test-alpine-image .
