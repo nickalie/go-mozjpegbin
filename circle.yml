@@ -12,7 +12,7 @@ dependencies:
       - sudo make install:
           pwd:
             mozjpeg
-      - sudo ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/jpegtran && \
+      - sudo ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/jpegtran
       - sudo ln -s /opt/mozjpeg/bin/cjpeg /usr/local/bin/cjpeg
 test:
   override:
