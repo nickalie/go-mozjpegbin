@@ -1,10 +1,10 @@
 package mozjpegbin
 
 import (
+	"errors"
+	"fmt"
 	"github.com/nickalie/go-binwrapper"
 	"io"
-	"fmt"
-	"errors"
 )
 
 type cropInfo struct {
@@ -152,7 +152,7 @@ func (c *JpegTran) Run() error {
 	return nil
 }
 
-func (c *JpegTran) Version() (string, error)  {
+func (c *JpegTran) Version() (string, error) {
 	return version(c.BinWrapper)
 }
 

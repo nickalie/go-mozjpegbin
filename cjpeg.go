@@ -1,11 +1,11 @@
 package mozjpegbin
 
 import (
+	"errors"
+	"fmt"
 	"github.com/nickalie/go-binwrapper"
 	"image"
 	"io"
-	"fmt"
-	"errors"
 )
 
 type CJpeg struct {
@@ -134,7 +134,7 @@ func (c *CJpeg) Run() error {
 	return nil
 }
 
-func (c *CJpeg) Version() (string, error)  {
+func (c *CJpeg) Version() (string, error) {
 	return version(c.BinWrapper)
 }
 
