@@ -2,18 +2,18 @@ package mozjpegbin
 
 import (
 	"bytes"
-	"runtime"
 	"github.com/nickalie/go-binwrapper"
 	"image"
-	"io"
 	"image/jpeg"
+	"io"
+	"runtime"
 	"strings"
 )
 
 var skipDownload bool
 var dest string = "vendor/mozjpeg"
 
-func init()  {
+func init() {
 	if runtime.GOARCH == "arm" || runtime.GOOS != "windows" {
 		SkipDownload()
 	}
@@ -36,7 +36,7 @@ func createBinWrapper() *binwrapper.BinWrapper {
 	if !skipDownload {
 		b.Src(
 			binwrapper.NewSrc().
-				Url("https://mozjpeg.codelove.de/bin/mozjpeg_3.1_x86.zip").
+				URL("https://mozjpeg.codelove.de/bin/mozjpeg_3.1_x86.zip").
 				Os("win32"))
 	}
 

@@ -1,0 +1,17 @@
+version: 2
+jobs:
+  build:
+    working_directory: /go/src/github/nickalie/go-webpbin
+    docker:
+      - image: golang
+    steps:
+      - run: apt-get update && apt-get install -y --no-install-recommends g++ make autoconf automake libtool nasm wget
+      - run: wget https://github.com/mozilla/mozjpeg/releases/download/v3.2-pre/mozjpeg-3.2-release-source.tar.gz
+      - run: tar -xvzf mozjpeg-3.2-release-source.tar.gz
+      - run: cd mozjpeg && ./configure && make install
+      - run: ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/jpegtran
+      - run: ln -s /opt/mozjpeg/bin/cjpeg /usr/local/bin/cjpeg
+      - checkout
+      - run: go get -t -v ./...
+      - run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
+      - run: curl -s https://codecov.io/bash | bash
