@@ -11,6 +11,7 @@ jobs:
       - run: cd mozjpeg && ./configure && make install
       - run: ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/jpegtran
       - run: ln -s /opt/mozjpeg/bin/cjpeg /usr/local/bin/cjpeg
+      - rm -rf /go/src/github/nickalie/go-mozjpegbin
       - checkout
       - run: go get -t -v ./...
       - run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
