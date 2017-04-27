@@ -15,3 +15,24 @@ jobs:
       - run: go get -t -v ./...
       - run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
       - run: curl -s https://codecov.io/bash | bash
+      - run: |
+          curl -u ${CIRCLE_API_TOKEN}: -d build_parameters[CIRCLE_JOB]=build_alpine https://circleci.com/api/v1.1/project/github/nickalie/go-mozjpegbin/tree/master
+  build_alpine:
+    working_directory: /go/src/github/nickalie/go-mozjpegbin
+    docker:
+     - image: golang:alpine
+    steps:
+     - run: RUN apk add --no-cache --update g++ make autoconf automake libtool nasm wget git
+     - run: |
+        wget https://github.com/mozilla/mozjpeg/releases/download/v3.2-pre/mozjpeg-3.2-release-source.tar.gz
+        tar -xvzf mozjpeg-3.2-release-source.tar.gz
+        rm mozjpeg-3.2-release-source.tar.gz
+        cd mozjpeg
+        ./configure
+        make install
+        cd .. && rm -rf mozjpeg
+        ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/jpegtran
+        ln -s /opt/mozjpeg/bin/cjpeg /usr/local/bin/cjpeg
+     - checkout
+     - run: go get -t -v ./...
+     - run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
