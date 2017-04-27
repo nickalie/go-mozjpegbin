@@ -5,12 +5,13 @@ import (
 	"io"
 )
 
-type Options struct{
-	Quality uint
+// Options to use with encoder
+type Options struct {
+	Quality  uint
 	Optimize bool
 }
 
-
+// Encode encodes image.Image into jpeg using cjpeg.
 func Encode(w io.Writer, m image.Image, o *Options) error {
 	cjpeg := NewCJpeg()
 

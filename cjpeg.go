@@ -8,6 +8,7 @@ import (
 	"io"
 )
 
+// CJpeg wraps cjpeg tool from mozjpeg
 type CJpeg struct {
 	*binwrapper.BinWrapper
 	inputFile  string
@@ -19,6 +20,7 @@ type CJpeg struct {
 	optimize   bool
 }
 
+// NewCJpeg creates new CJpeg instance
 func NewCJpeg() *CJpeg {
 	bin := &CJpeg{
 		BinWrapper: createBinWrapper(),
@@ -29,8 +31,8 @@ func NewCJpeg() *CJpeg {
 	return bin
 }
 
-//Sets image file to convert
-//Input or InputImage called before will be ignored
+// InputFile sets image file to convert.
+// Input or InputImage called before will be ignored.
 func (c *CJpeg) InputFile(file string) *CJpeg {
 	c.input = nil
 	c.inputImage = nil
@@ -38,8 +40,8 @@ func (c *CJpeg) InputFile(file string) *CJpeg {
 	return c
 }
 
-//Sets reader to convert
-//InputFile or InputImage called before will be ignored
+// Input sets reader to convert.
+// InputFile or InputImage called before will be ignored.
 func (c *CJpeg) Input(reader io.Reader) *CJpeg {
 	c.inputFile = ""
 	c.inputImage = nil
@@ -47,8 +49,8 @@ func (c *CJpeg) Input(reader io.Reader) *CJpeg {
 	return c
 }
 
-//Sets image to convert
-//InputFile or Input called before will be ignored
+// InputImage sets image to convert.
+// InputFile or Input called before will be ignored.
 func (c *CJpeg) InputImage(img image.Image) *CJpeg {
 	c.inputFile = ""
 	c.input = nil
@@ -56,25 +58,25 @@ func (c *CJpeg) InputImage(img image.Image) *CJpeg {
 	return c
 }
 
-//Specify the name of the output JPEG file
-//Output called before will be ignored
+// OutputFile specify the name of the output jpeg file.
+// Output called before will be ignored.
 func (c *CJpeg) OutputFile(file string) *CJpeg {
 	c.output = nil
 	c.outputFile = file
 	return c
 }
 
-//Specify writer to write JPEG file content
-//OutputFile called before will be ignored
+// Output specify writer to write jpeg file content.
+// OutputFile called before will be ignored.
 func (c *CJpeg) Output(writer io.Writer) *CJpeg {
 	c.outputFile = ""
 	c.output = writer
 	return c
 }
 
-//Specify the compression factor for RGB channels between 0 and 100. The default is 75.
+// Quality specify the compression factor for RGB channels between 0 and 100. The default is 75.
 //
-//A small factor produces a smaller file with lower quality. Best quality is achieved by using a value of 100.
+// A small factor produces a smaller file with lower quality. Best quality is achieved by using a value of 100.
 func (c *CJpeg) Quality(quality uint) *CJpeg {
 	if quality > 100 {
 		quality = 100
@@ -84,16 +86,16 @@ func (c *CJpeg) Quality(quality uint) *CJpeg {
 	return c
 }
 
-//Perform optimization of entropy encoding parameters.
-//Without this, default encoding parameters are used.
-//Optimize usually makes the JPEG file a little smaller, but cjpeg runs somewhat slower and needs much more memory.
-//Image quality and speed of decompression are unaffected by Optimize.
+// Optimize perform optimization of entropy encoding parameters.
+// Without this, default encoding parameters are used.
+// Optimize usually makes the JPEG file a little smaller, but cjpeg runs somewhat slower and needs much more memory.
+// Image quality and speed of decompression are unaffected by Optimize.
 func (c *CJpeg) Optimize(optimize bool) *CJpeg {
 	c.optimize = optimize
 	return c
 }
 
-//Runs encoder
+// Run starts cjpeg with specified parameters.
 func (c *CJpeg) Run() error {
 	defer c.BinWrapper.Reset()
 
@@ -134,11 +136,12 @@ func (c *CJpeg) Run() error {
 	return nil
 }
 
+// Version returns cjpeg version.
 func (c *CJpeg) Version() (string, error) {
 	return version(c.BinWrapper)
 }
 
-//Resets all parameters to default values
+// Reset resets all parameters to default values
 func (c *CJpeg) Reset() *CJpeg {
 	c.quality = -1
 	c.optimize = false

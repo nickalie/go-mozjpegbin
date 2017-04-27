@@ -11,7 +11,7 @@ import (
 )
 
 var skipDownload bool
-var dest string = "vendor/mozjpeg"
+var dest = "vendor/mozjpeg"
 
 func init() {
 	if runtime.GOARCH == "arm" || runtime.GOOS != "windows" {
@@ -19,13 +19,13 @@ func init() {
 	}
 }
 
-//Skips binary download.
+// SkipDownload skips binary download.
 func SkipDownload() {
 	skipDownload = true
 	dest = ""
 }
 
-//Sets directory to download mozjpeg binaries or where to look for them if SkipDownload is used.
+// Dest sets directory to download mozjpeg binaries or where to look for them if SkipDownload is used. Default is "vendor/mozjpeg"
 func Dest(value string) {
 	dest = value
 }
