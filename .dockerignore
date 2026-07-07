@@ -2,4 +2,6 @@
 .git
 vendor
 source.jpg
+source.ppm
+target.jpg
 *.iml

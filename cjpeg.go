@@ -162,7 +162,7 @@ func (c *CJpeg) setInput() error {
 	} else if c.inputFile != "" {
 		c.Arg(c.inputFile)
 	} else {
-		return errors.New("Undefined input")
+		return errors.New("undefined input")
 	}
 
 	return nil
@@ -174,6 +174,6 @@ func (c *CJpeg) getOutput() (string, error) {
 	} else if c.outputFile != "" {
 		return c.outputFile, nil
 	} else {
-		return "", errors.New("Undefined output")
+		return "", errors.New("undefined output")
 	}
 }

@@ -1,13 +1,13 @@
 # JPEG Encoder for Golang
 
-[![](https://img.shields.io/badge/docs-godoc-blue.svg)](https://godoc.org/github.com/nickalie/go-mozjpegbin)
-[![](https://circleci.com/gh/nickalie/go-mozjpegbin.png?circle-token=bf2a63a9ecd6ca6f4c4d81028d710cb847e58695)](https://circleci.com/gh/nickalie/go-mozjpegbin)
+[![Go Reference](https://pkg.go.dev/badge/github.com/nickalie/go-mozjpegbin.svg)](https://pkg.go.dev/github.com/nickalie/go-mozjpegbin)
+[![CI](https://github.com/nickalie/go-mozjpegbin/actions/workflows/ci.yml/badge.svg)](https://github.com/nickalie/go-mozjpegbin/actions/workflows/ci.yml)
 
-MozJPEG Encoder for Golang based on unofficial mozjpeg distribution
+MozJPEG Encoder for Golang. Wraps the `cjpeg` and `jpegtran` command line tools.
 
 ## Install
 
-```go get -u github.com/nickalie/go-mozjpegbin```
+```go get github.com/nickalie/go-mozjpegbin```
 
 ## Example of usage
 
@@ -85,7 +85,13 @@ err := mozjpegbin.NewJpegTran().
 
 ## mozjpeg distribution
 
-Under the hood library uses *cjpeg* and *jpegtrans* command line tools from mozjpeg. To avoid compatibility issues, it's better to build mozjpeg for your target platform and call ```mozjpegbin.SkipDownload()``` to avoid using of prebuilt binaries 
+Under the hood the library shells out to the *cjpeg* and *jpegtran* command line
+tools. They must be available on `PATH` (or in the directory set via
+`mozjpegbin.Dest(...)`). Install them from mozjpeg or a compatible
+libjpeg-turbo build (e.g. `apt-get install libjpeg-turbo-progs`).
+
+> Note: `mozjpegbin.SkipDownload()` is now a deprecated no-op — automatic binary
+> download is no longer supported; install the tools on your system.
 
 Snippet to build mozjpeg on alpine:
 

@@ -2,3 +2,6 @@
 *.iml
 vendor
 source.jpg
+source.ppm
+target.jpg
+coverage.txt

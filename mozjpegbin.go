@@ -2,51 +2,61 @@ package mozjpegbin
 
 import (
 	"bytes"
-	"github.com/nickalie/go-binwrapper"
+	"fmt"
 	"image"
-	"image/jpeg"
 	"io"
-	"runtime"
 	"strings"
+
+	"github.com/nickalie/go-binwrapper"
 )
 
-var skipDownload bool
-var dest = "vendor/mozjpeg"
+var dest = ""
 
-func init() {
-	if runtime.GOARCH == "arm" || runtime.GOOS != "windows" {
-		SkipDownload()
-	}
-}
+// SkipDownload is deprecated and has no effect.
+//
+// Deprecated: binary download is no longer supported by go-binwrapper. Install
+// cjpeg/jpegtran on the system (see README) so they are resolved from PATH or
+// from the directory set via Dest.
+func SkipDownload() {}
 
-// SkipDownload skips binary download.
-func SkipDownload() {
-	skipDownload = true
-	dest = ""
-}
-
-// Dest sets directory to download mozjpeg binaries or where to look for them if SkipDownload is used. Default is "vendor/mozjpeg"
+// Dest sets the directory to look for mozjpeg binaries in.
+// By default binaries are resolved from PATH.
 func Dest(value string) {
 	dest = value
 }
 
 func createBinWrapper() *binwrapper.BinWrapper {
-	b := binwrapper.NewBinWrapper().AutoExe()
-
-	if !skipDownload {
-		b.Src(
-			binwrapper.NewSrc().
-				URL("https://mozjpeg.codelove.de/bin/mozjpeg_3.1_x86.zip").
-				Os("win32"))
-	}
-
-	return b.Strip(2).Dest(dest)
+	return binwrapper.NewBinWrapper().AutoExe().Dest(dest)
 }
 
+// createReaderFromImage encodes img as a binary PPM (P6) stream. PPM is cjpeg's
+// native input format, so this avoids an extra lossy JPEG pass and works with
+// any cjpeg build (unlike PNG/JPEG input, which older builds don't accept).
 func createReaderFromImage(img image.Image) (io.Reader, error) {
+	bounds := img.Bounds()
+	width, height := bounds.Dx(), bounds.Dy()
+
 	var buffer bytes.Buffer
-	err := jpeg.Encode(&buffer, img, &jpeg.Options{Quality: 100})
-	return &buffer, err
+	if _, err := fmt.Fprintf(&buffer, "P6\n%d %d\n255\n", width, height); err != nil {
+		return nil, err
+	}
+
+	row := make([]byte, width*3)
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		i := 0
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			r, g, b, _ := img.At(x, y).RGBA()
+			row[i] = byte(r >> 8)
+			row[i+1] = byte(g >> 8)
+			row[i+2] = byte(b >> 8)
+			i += 3
+		}
+		if _, err := buffer.Write(row); err != nil {
+			return nil, err
+		}
+	}
+
+	return &buffer, nil
 }
 
 func version(b *binwrapper.BinWrapper) (string, error) {
@@ -58,7 +68,7 @@ func version(b *binwrapper.BinWrapper) (string, error) {
 	}
 
 	v := string(b.StdErr())
-	v = strings.Replace(v, "\n", "", -1)
-	v = strings.Replace(v, "\r", "", -1)
+	v = strings.ReplaceAll(v, "\n", "")
+	v = strings.ReplaceAll(v, "\r", "")
 	return v, nil
 }

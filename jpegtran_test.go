@@ -1,8 +1,8 @@
 package mozjpegbin
 
 import (
-	"os"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
@@ -28,7 +28,7 @@ func TestJpegTranFile(t *testing.T) {
 
 func TestJpegTranCrop(t *testing.T) {
 	c := NewJpegTran()
-	c.Crop(500, 500, 100, 100)
+	c.Crop(100, 100, 100, 100)
 	c.InputFile("source.jpg")
 	c.OutputFile("target.jpg")
 	err := c.Run()
@@ -38,14 +38,14 @@ func TestJpegTranCrop(t *testing.T) {
 func TestJpegTranWriter(t *testing.T) {
 	f, err := os.Create("target.jpg")
 	assert.Nil(t, err)
-	defer f.Close()
+	defer f.Close() //nolint:errcheck // backup close; validateJpg fails if the file is incomplete
 
 	c := NewJpegTran()
 	c.InputFile("source.jpg")
 	c.Output(f)
 	err = c.Run()
 	assert.Nil(t, err)
-	f.Close()
+	f.Close() //nolint:errcheck // validateJpg re-reads the file and would fail on a bad write
 	validateJpg(t)
 }
 
