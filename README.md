@@ -93,18 +93,19 @@ libjpeg-turbo build (e.g. `apt-get install libjpeg-turbo-progs`).
 > Note: `mozjpegbin.SkipDownload()` is now a deprecated no-op — automatic binary
 > download is no longer supported; install the tools on your system.
 
-Snippet to build mozjpeg on alpine:
+The quickest way is the system libjpeg-turbo package, which ships `cjpeg` and
+`jpegtran` (see the example [`docker/`](docker) images):
 
 ```
-apk add --no-cache --update g++ make autoconf automake libtool nasm wget
+# Debian/Ubuntu
+apt-get install -y libjpeg-turbo-progs
 
-wget https://github.com/mozilla/mozjpeg/releases/download/v3.2-pre/mozjpeg-3.2-release-source.tar.gz && \
-tar -xvzf mozjpeg-3.2-release-source.tar.gz && \
-rm mozjpeg-3.2-release-source.tar.gz && \
-cd mozjpeg && \
-./configure && \
-make install && \
-cd / && rm -rf mozjpeg && \
-ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/jpegtran && \
-ln -s /opt/mozjpeg/bin/cjpeg /usr/local/bin/cjpeg
+# Alpine
+apk add --no-cache libjpeg-turbo-utils
 ```
+
+For the best compression, use mozjpeg's own builds — its `cjpeg` produces
+smaller files than stock libjpeg-turbo (trellis quantization and other
+optimizations). Grab a prebuilt binary or build it from source following the
+[mozjpeg README](https://github.com/mozilla/mozjpeg), then make sure its
+`cjpeg`/`jpegtran` are on `PATH`.
