@@ -18,13 +18,31 @@ jobs:
           version: latest
   test:
     runs-on: ubuntu-latest
+    env:
+      MOZJPEG_VERSION: 4.1.1
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
-      - name: Install mozjpeg-compatible tools (cjpeg/jpegtran)
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libjpeg-turbo-progs
+      - name: Cache mozjpeg
+        id: cache-mozjpeg
+        uses: actions/cache@v6
+        with:
+          path: ~/mozjpeg
+          key: mozjpeg-${{ env.MOZJPEG_VERSION }}-${{ runner.os }}
+      - name: Build mozjpeg
+        if: steps.cache-mozjpeg.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends cmake nasm g++ make wget
+          wget -O mozjpeg.tar.gz https://github.com/mozilla/mozjpeg/archive/refs/tags/v${MOZJPEG_VERSION}.tar.gz
+          tar -xzf mozjpeg.tar.gz && rm mozjpeg.tar.gz
+          cd mozjpeg-${MOZJPEG_VERSION}
+          cmake -G"Unix Makefiles" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DPNG_SUPPORTED=0 -DCMAKE_INSTALL_PREFIX="$HOME/mozjpeg" .
+          make -j"$(nproc)"
+          make install
+      - name: Put mozjpeg on PATH
+        run: echo "$HOME/mozjpeg/bin" >> "$GITHUB_PATH"
       - name: Test
         run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
       - uses: codecov/codecov-action@v7
