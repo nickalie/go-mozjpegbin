@@ -93,19 +93,24 @@ libjpeg-turbo build (e.g. `apt-get install libjpeg-turbo-progs`).
 > Note: `mozjpegbin.SkipDownload()` is now a deprecated no-op — automatic binary
 > download is no longer supported; install the tools on your system.
 
-The quickest way is the system libjpeg-turbo package, which ships `cjpeg` and
-`jpegtran` (see the example [`docker/`](docker) images):
+Build mozjpeg for your target platform so you get its better compression
+(trellis quantization and other optimizations that stock libjpeg-turbo lacks).
+Since mozjpeg 4.x the build uses CMake:
 
 ```
-# Debian/Ubuntu
-apt-get install -y libjpeg-turbo-progs
+apk add --no-cache build-base cmake nasm wget   # Debian/Ubuntu: cmake nasm g++ make wget
 
-# Alpine
-apk add --no-cache libjpeg-turbo-utils
+wget -O mozjpeg.tar.gz https://github.com/mozilla/mozjpeg/archive/refs/tags/v4.1.1.tar.gz && \
+tar -xzf mozjpeg.tar.gz && rm mozjpeg.tar.gz && \
+cd mozjpeg-4.1.1 && \
+cmake -G"Unix Makefiles" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DPNG_SUPPORTED=0 -DCMAKE_INSTALL_PREFIX=/opt/mozjpeg . && \
+make -j"$(nproc)" && make install && \
+cd / && rm -rf mozjpeg-4.1.1 && \
+ln -s /opt/mozjpeg/bin/cjpeg /usr/local/bin/cjpeg && \
+ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/jpegtran
 ```
 
-For the best compression, use mozjpeg's own builds — its `cjpeg` produces
-smaller files than stock libjpeg-turbo (trellis quantization and other
-optimizations). Grab a prebuilt binary or build it from source following the
-[mozjpeg README](https://github.com/mozilla/mozjpeg), then make sure its
-`cjpeg`/`jpegtran` are on `PATH`.
+Ready-to-use [`docker/`](docker) images build mozjpeg this way. If you only need
+the tools working (e.g. for tests) and don't care about the extra compression,
+the system libjpeg-turbo package also provides compatible `cjpeg`/`jpegtran`
+(`apt-get install libjpeg-turbo-progs` / `apk add libjpeg-turbo-utils`).

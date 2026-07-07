@@ -1,6 +1,19 @@
 FROM golang
 
-RUN apt-get update && apt-get install -y --no-install-recommends libjpeg-turbo-progs && rm -rf /var/lib/apt/lists/*
+ARG MOZJPEG_VERSION=4.1.1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates cmake nasm g++ make wget && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN wget -O mozjpeg.tar.gz https://github.com/mozilla/mozjpeg/archive/refs/tags/v${MOZJPEG_VERSION}.tar.gz && \
+    tar -xzf mozjpeg.tar.gz && rm mozjpeg.tar.gz && \
+    cd mozjpeg-${MOZJPEG_VERSION} && \
+    cmake -G"Unix Makefiles" -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DPNG_SUPPORTED=0 -DCMAKE_INSTALL_PREFIX=/opt/mozjpeg . && \
+    make -j"$(nproc)" && make install && \
+    cd / && rm -rf mozjpeg-${MOZJPEG_VERSION} && \
+    ln -s /opt/mozjpeg/bin/cjpeg /usr/local/bin/cjpeg && \
+    ln -s /opt/mozjpeg/bin/jpegtran /usr/local/bin/jpegtran
 
 WORKDIR /app
 COPY go.mod go.sum ./
